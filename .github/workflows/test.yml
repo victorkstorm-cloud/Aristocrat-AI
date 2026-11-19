@@ -41,3 +41,5 @@ jobs:
           cp run_smoke/benchmark.json "$RUNNER_TEMP/first-benchmark.json"
           python train_5090.py --smoke --device cpu
           cmp "$RUNNER_TEMP/first-benchmark.json" run_smoke/benchmark.json
+          printf 'Ifmmp xpsme!\n/quit\n' | python run_smoke/chat/aristocrat_chat.py > "$RUNNER_TEMP/export.txt"
+          grep -q 'Refinement passes: 3' "$RUNNER_TEMP/export.txt"

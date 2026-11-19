@@ -1,6 +1,8 @@
 """Decode Science Olympiad Aristocrat puzzles in a terminal."""
 
 import argparse
+import re
+from functools import lru_cache
 from pathlib import Path
 
 from string import ascii_lowercase as ALPHABET
@@ -14,6 +16,7 @@ SPACE_ID = 27
 SPACE_INDEX = SPACE_ID - 1
 OFFSETS = (-3, -2, -1, 1, 2, 3)
 CONTEXT_RADIUS = 6
+MODEL_FILES = ("aristocrat_weights.npz", "aristocrat_refiner.npz")
 
 
 def extract_features(tokens):
@@ -121,14 +124,13 @@ def predict_key(scores):
 
 
 def tokenize_ciphertext(ciphertext: str) -> list[int]:
-    """Keep letter IDs and one space token between words."""
+    """Match corpus word boundaries while keeping contractions together."""
     tokens = []
-    for word in ciphertext.split():
-        letter_ids = [LETTER_IDS[char] for char in word if char in LETTER_IDS]
-        if letter_ids:
-            if tokens:
-                tokens.append(SPACE_ID)
-            tokens.extend(letter_ids)
+    text = ciphertext.lower().replace("'", "").replace("’", "")
+    for word in re.findall(r"[a-z]+", text):
+        if tokens:
+            tokens.append(SPACE_ID)
+        tokens.extend(LETTER_IDS[char] for char in word)
     return tokens
 
 
@@ -232,21 +234,30 @@ def candidate_scores(tokens, key, scores, language):
     return float(language_score), float(evidence)
 
 
-def decode(ciphertext, weights, refiner_weights, strength, language, evidence_weight, pass_count):
-    tokens = np.asarray(tokenize_ciphertext(ciphertext.lower()), dtype=int)
-    if not len(tokens):
-        raise ValueError("Enter a ciphertext containing letters A-Z.")
+@lru_cache(maxsize=1)
+def get_language_search():
+    """Build the word-pattern index once per process, on first use."""
+    from build_lexicon import load_word_counts
+    from word_search import WordSearch
 
+    return WordSearch(load_word_counts())
+
+
+def solve_tokens(tokens, weights, refiner_weights, strength, language, evidence_weight, pass_count,
+                 search=None):
+    """Return first, neural-refined, and final keys from ciphertext alone."""
+    if pass_count < 0:
+        raise ValueError("Refinement passes must be nonnegative.")
     first_key, scores = first_guess(tokens, weights)
+    if not pass_count:
+        return first_key, first_key, first_key
     refined_key = first_key
     best_score = -np.inf
-    passes = 0
     candidates = refinement_candidates(tokens, first_key, scores, refiner_weights, strength, pass_count)
     previous_key = None
-    for round_number, key in enumerate(candidates):
+    for key in candidates:
         if key is previous_key:
             # The generator only repeats an object after it has converged.
-            passes = pass_count
             break
         previous_key = key
         fluency, evidence = candidate_scores(tokens, key, scores, language)
@@ -254,8 +265,31 @@ def decode(ciphertext, weights, refiner_weights, strength, language, evidence_we
         if quality > best_score:
             best_score = quality
             refined_key = key
-        passes = round_number
-    return apply_key(ciphertext, first_key), apply_key(ciphertext, refined_key), passes
+    final_key = refined_key
+    if search is not None:
+        from char_language import load_char_language
+        from search_keys import polish_key
+
+        def score_key(candidate):
+            fluency, evidence = candidate_scores(tokens, candidate, scores, language)
+            return fluency + evidence_weight * evidence
+
+        _, word_key = search.search(tokens, refined_key, score_key)[0]
+        local_key = polish_key(tokens, word_key, scores, language, evidence_weight, search.counts)
+        final_key = polish_key(tokens, local_key, scores, language, evidence_weight, search.counts,
+                               char_language=load_char_language())
+    return first_key, refined_key, final_key
+
+
+def decode(ciphertext, weights, refiner_weights, strength, language, evidence_weight, pass_count,
+           *, neural_only=False):
+    tokens = np.asarray(tokenize_ciphertext(ciphertext), dtype=int)
+    if not len(tokens):
+        raise ValueError("Enter a ciphertext containing letters A-Z.")
+    search = get_language_search() if pass_count > 0 and not neural_only else None
+    first_key, _, final_key = solve_tokens(tokens, weights, refiner_weights, strength,
+                                           language, evidence_weight, pass_count, search)
+    return apply_key(ciphertext, first_key), apply_key(ciphertext, final_key), pass_count
 
 
 def read_ciphertext():
@@ -287,6 +321,29 @@ def load_main_weights(path):
     return tuple(weights)
 
 
+def default_model_dir():
+    script_dir = Path(__file__).resolve().parent
+    bundled = script_dir / "models" / "rtx5090"
+    return bundled if all((bundled / f).is_file() for f in MODEL_FILES) else script_dir
+
+
+def load_model(model_dir):
+    """Load a model pair for repeated inference or evaluation."""
+    model_dir = Path(model_dir)
+    model_path, refiner_path = (model_dir / name for name in MODEL_FILES)
+    missing = [str(path) for path in (model_path, refiner_path) if not path.is_file()]
+    if missing:
+        raise FileNotFoundError("model files not found: " + ", ".join(missing))
+    weights = load_main_weights(model_path)
+    with np.load(refiner_path, allow_pickle=False) as archive:
+        refiner_weights = tuple(archive[f"weight_{i}"].astype(np.float32) for i in range(7))
+        strength = float(archive["strength"].item())
+        language = archive["language"]
+        evidence_weight = float(archive["evidence_weight"].item())
+        default_passes = int(archive["max_passes"].item())
+    return weights, refiner_weights, strength, language, evidence_weight, default_passes
+
+
 def main():
     parser = argparse.ArgumentParser(description="Decode Science Olympiad Aristocrat puzzles.")
     parser.add_argument(
@@ -299,27 +356,18 @@ def main():
               "(default: models/rtx5090 beside this script when both files exist, "
               "otherwise the script directory)"),
     )
+    parser.add_argument("--neural-only", action="store_true",
+                        help="use neural refinement alone, skipping the language search")
     args = parser.parse_args()
     if args.passes is not None and args.passes < 0:
         parser.error("--passes must be zero or greater")
 
-    script_dir = Path(__file__).resolve().parent
-    filenames = ("aristocrat_weights.npz", "aristocrat_refiner.npz")
-    bundled_dir = script_dir / "models" / "rtx5090"
-    model_dir = args.model_dir
-    if model_dir is None:
-        model_dir = bundled_dir if all((bundled_dir / name).is_file() for name in filenames) else script_dir
-    model_path, refiner_path = (model_dir / name for name in filenames)
-    missing = [str(path) for path in (model_path, refiner_path) if not path.is_file()]
-    if missing:
-        parser.error("model files not found: " + ", ".join(missing))
-    weights = load_main_weights(model_path)
-    with np.load(refiner_path, allow_pickle=False) as archive:
-        refiner_weights = tuple(archive[f"weight_{i}"].astype(np.float32) for i in range(7))
-        strength = float(archive["strength"].item())
-        language = archive["language"]
-        evidence_weight = float(archive["evidence_weight"].item())
-        default_passes = int(archive["max_passes"].item())
+    try:
+        weights, refiner_weights, strength, language, evidence_weight, default_passes = load_model(
+            args.model_dir if args.model_dir is not None else default_model_dir()
+        )
+    except FileNotFoundError as error:
+        parser.error(str(error))
     pass_count = default_passes if args.passes is None else args.passes
     print("Aristocrat Decoder")
     print("Paste a cipher and press Enter. Use /paste for multiple lines or /quit to exit.")
@@ -338,6 +386,7 @@ def main():
         try:
             first, refined, passes = decode(
                 ciphertext, weights, refiner_weights, strength, language, evidence_weight, pass_count,
+                neural_only=args.neural_only,
             )
         except ValueError as error:
             print(error)

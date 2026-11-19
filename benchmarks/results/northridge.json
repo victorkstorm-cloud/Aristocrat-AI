@@ -1,0 +1,134 @@
+{
+  "organizer_index": "https://toebes.com/codebusters/samples.html",
+  "sources": {
+    "B": {
+      "url": "https://raw.githubusercontent.com/toebes/ciphers/master/samples/2026_B_Invitational_Northridge.json",
+      "sha256": "9c682075c64819c2f5bbe0f7438cac3b39a0678d6468947ff39f9614ba6d85ff"
+    },
+    "C": {
+      "url": "https://raw.githubusercontent.com/toebes/ciphers/master/samples/2026_C_Invitational_Northridge.json",
+      "sha256": "9b3310d1d623d34adc896684e60ea251a82d8e379217b42fbc2ef26148840d7b"
+    }
+  },
+  "eligible_count": 14,
+  "question_ids": [
+    "B-381",
+    "B-389",
+    "B-385",
+    "B-391",
+    "B-393",
+    "B-397",
+    "B-402",
+    "B-404",
+    "C-353",
+    "C-362",
+    "C-366",
+    "C-370",
+    "C-374",
+    "C-380"
+  ],
+  "exclusions": [
+    {
+      "id": "B-387",
+      "reason": "non-English"
+    },
+    {
+      "id": "C-357",
+      "reason": "not plaintext recovery"
+    },
+    {
+      "id": "C-364",
+      "reason": "not plaintext recovery"
+    },
+    {
+      "id": "C-368",
+      "reason": "not plaintext recovery"
+    },
+    {
+      "id": "C-372",
+      "reason": "non-English"
+    },
+    {
+      "id": "C-376",
+      "reason": "non-English"
+    }
+  ],
+  "results": [
+    {
+      "id": "B-381",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-389",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-385",
+      "baseline_correct": false,
+      "enhanced_correct": false
+    },
+    {
+      "id": "B-391",
+      "baseline_correct": true,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-393",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-397",
+      "baseline_correct": true,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-402",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "B-404",
+      "baseline_correct": true,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-353",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-362",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-366",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-370",
+      "baseline_correct": true,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-374",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    },
+    {
+      "id": "C-380",
+      "baseline_correct": false,
+      "enhanced_correct": true
+    }
+  ],
+  "aggregate": {
+    "baseline_correct": 4,
+    "enhanced_correct": 13,
+    "fixed": 9,
+    "broken": 0
+  }
+}

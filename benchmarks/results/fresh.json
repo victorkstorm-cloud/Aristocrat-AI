@@ -1,0 +1,117 @@
+{
+  "split": "fresh",
+  "seed": 20261119,
+  "datasets": [
+    {
+      "book": "blake-poems.txt",
+      "count": 300,
+      "seed": 20261119
+    },
+    {
+      "book": "bible-kjv.txt",
+      "count": 300,
+      "seed": 20261120
+    }
+  ],
+  "archive_sha256": "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
+  "artifacts_sha256": {
+    "model_weights": "922c181daaf95d63b6508fdc5b5b3530e19deecb121deafe4880f4b12f2760da",
+    "refiner_weights": "b1480a5c037b4deeab523bf45cfa994dbac80076413182ebefbd76ad8502f517",
+    "lexicon": "90ebfc5b5999c6f62b7ec45e8d4f4129c49cc4c751ee11119b548ade70e8b500",
+    "fivegram_model": "55453770a070b9fcaebd365d35f8df061f5e36a8b47b91d543aaf740a8b48abe",
+    "fivegram_loader_code": "db3fd1e7a8866a5639dd71b29c973398306e7798dd9808307b146e8d567dc7db",
+    "solver_code": "a26bc7450f694798745d05d8b44b6ba16d063736c0c8f85ae8d7e266b2a05fd1",
+    "search_keys_code": "f4b9b52932b3119d2bf2884e47ccf343e252e8274128b9328079d05b8904dbfb",
+    "word_search_code": "422c54fdf2f7b24cefae48a7bf73baebba20fb06c055ff3189d3c2cdc7d578b6",
+    "benchmark_code": "81ec4590c7249938bf8e864eac9adc0ac345fb048aa1d1ed4f5a84f5cc475a1e",
+    "data_code": "b0b571fe98c65c6e77565910f6520c1624be6b9ff2f9f40084a91ad781afe0f7",
+    "lexicon_loader_code": "f2390d008f4725136121792ff04559af72f52e13410157b49ce7e5527f6e7588"
+  },
+  "python_version": "3.13.17",
+  "numpy_version": "2.5.5",
+  "workers": 3,
+  "elapsed_seconds": 42.135108699963894,
+  "overall": {
+    "puzzles": 600,
+    "letters": 80137,
+    "baseline": {
+      "solved": 235,
+      "solve_rate": 0.39166666666666666,
+      "solve_rate_wilson_95": [
+        0.35341694240118393,
+        0.431294759485118
+      ],
+      "letter_accuracy": 0.9337259942348728
+    },
+    "enhanced": {
+      "solved": 480,
+      "solve_rate": 0.8,
+      "solve_rate_wilson_95": [
+        0.7661303480740234,
+        0.8300526313177563
+      ],
+      "letter_accuracy": 0.9947714538852216
+    },
+    "changed": 361,
+    "fixed": 254,
+    "broken": 9,
+    "letter_improved": 339,
+    "letter_worsened": 13
+  },
+  "per_book": {
+    "blake-poems.txt": {
+      "puzzles": 300,
+      "letters": 39876,
+      "baseline": {
+        "solved": 119,
+        "solve_rate": 0.39666666666666667,
+        "solve_rate_wilson_95": [
+          0.34295083194304077,
+          0.452995382110032
+        ],
+        "letter_accuracy": 0.93301735379677
+      },
+      "enhanced": {
+        "solved": 251,
+        "solve_rate": 0.8366666666666667,
+        "solve_rate_wilson_95": [
+          0.7906268325698749,
+          0.8741935668055973
+        ],
+        "letter_accuracy": 0.996163105627445
+      },
+      "changed": 181,
+      "fixed": 137,
+      "broken": 5,
+      "letter_improved": 171,
+      "letter_worsened": 9
+    },
+    "bible-kjv.txt": {
+      "puzzles": 300,
+      "letters": 40261,
+      "baseline": {
+        "solved": 116,
+        "solve_rate": 0.38666666666666666,
+        "solve_rate_wilson_95": [
+          0.3333235932848012,
+          0.44287548019276246
+        ],
+        "letter_accuracy": 0.9344278582250813
+      },
+      "enhanced": {
+        "solved": 229,
+        "solve_rate": 0.7633333333333333,
+        "solve_rate_wilson_95": [
+          0.7120967390716028,
+          0.8079112960834695
+        ],
+        "letter_accuracy": 0.9933931099575272
+      },
+      "changed": 180,
+      "fixed": 117,
+      "broken": 4,
+      "letter_improved": 168,
+      "letter_worsened": 4
+    }
+  }
+}

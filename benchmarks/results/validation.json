@@ -1,0 +1,60 @@
+{
+  "split": "validation",
+  "seed": 704210,
+  "datasets": [
+    {
+      "books": [
+        "edgeworth-parents.txt",
+        "burgess-busterbrown.txt"
+      ],
+      "count": 300,
+      "seed": 704210
+    }
+  ],
+  "archive_sha256": "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
+  "artifacts_sha256": {
+    "model_weights": "922c181daaf95d63b6508fdc5b5b3530e19deecb121deafe4880f4b12f2760da",
+    "refiner_weights": "b1480a5c037b4deeab523bf45cfa994dbac80076413182ebefbd76ad8502f517",
+    "lexicon": "90ebfc5b5999c6f62b7ec45e8d4f4129c49cc4c751ee11119b548ade70e8b500",
+    "fivegram_model": "55453770a070b9fcaebd365d35f8df061f5e36a8b47b91d543aaf740a8b48abe",
+    "fivegram_loader_code": "db3fd1e7a8866a5639dd71b29c973398306e7798dd9808307b146e8d567dc7db",
+    "solver_code": "a26bc7450f694798745d05d8b44b6ba16d063736c0c8f85ae8d7e266b2a05fd1",
+    "search_keys_code": "f4b9b52932b3119d2bf2884e47ccf343e252e8274128b9328079d05b8904dbfb",
+    "word_search_code": "422c54fdf2f7b24cefae48a7bf73baebba20fb06c055ff3189d3c2cdc7d578b6",
+    "benchmark_code": "81ec4590c7249938bf8e864eac9adc0ac345fb048aa1d1ed4f5a84f5cc475a1e",
+    "data_code": "b0b571fe98c65c6e77565910f6520c1624be6b9ff2f9f40084a91ad781afe0f7",
+    "lexicon_loader_code": "f2390d008f4725136121792ff04559af72f52e13410157b49ce7e5527f6e7588"
+  },
+  "python_version": "3.13.17",
+  "numpy_version": "2.5.5",
+  "workers": 2,
+  "elapsed_seconds": 31.36089989996981,
+  "overall": {
+    "puzzles": 300,
+    "letters": 40973,
+    "baseline": {
+      "solved": 153,
+      "solve_rate": 0.51,
+      "solve_rate_wilson_95": [
+        0.45366418945602693,
+        0.5660829511194823
+      ],
+      "letter_accuracy": 0.9504063651673053
+    },
+    "enhanced": {
+      "solved": 267,
+      "solve_rate": 0.89,
+      "solve_rate_wilson_95": [
+        0.8495437677561146,
+        0.9205947146887394
+      ],
+      "letter_accuracy": 0.9976325873135967
+    },
+    "changed": 143,
+    "fixed": 116,
+    "broken": 2,
+    "letter_improved": 140,
+    "letter_worsened": 3
+  },
+  "per_book": {}
+}

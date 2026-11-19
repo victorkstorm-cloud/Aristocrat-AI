@@ -4,6 +4,7 @@ import argparse
 import gc
 import hashlib
 import json
+import shutil
 from itertools import islice
 from pathlib import Path
 
@@ -408,7 +409,12 @@ def run_training(args, documents, fingerprint, legacy_fingerprint=None):
     save_archive(output / "aristocrat_refiner.npz",
                  dict(refiner_arrays, strength=strength, language=language,
                       evidence_weight=evidence, max_passes=old_passes))
-    (output / "aristocrat_chat.py").write_bytes((BASE / "aristocrat_chat.py").read_bytes())
+    for name in ("aristocrat_chat.py", "word_search.py", "search_keys.py", "build_lexicon.py",
+                 "char_language.py"):
+        shutil.copyfile(BASE / name, output / name)
+    (output / "models").mkdir(exist_ok=True)
+    for name in ("english_words.tsv.gz", "english_fivegrams.npz"):
+        shutil.copyfile(BASE / "models" / name, output / "models" / name)
     report = json.dumps(results, indent=2)
     (args.run_dir / "benchmark.json").write_text(report + "\n", encoding="utf-8")
     print(report, flush=True)

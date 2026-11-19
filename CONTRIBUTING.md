@@ -17,4 +17,6 @@ For training-related changes, also consider `python train_5090.py --smoke --devi
 
 The root model files are the previous pair; the larger released pair and its historical report live under `models/rtx5090/`. Preserve compatibility with both when changing inference. Do not replace model artifacts or benchmark results without explaining how they were produced and validating them together. Do not assume the historical held-out-books results apply to a bundled-only run.
 
+For decoder changes, tune on the validation split. Evaluate the selected configuration once on the original test split and fresh books. Record paired exact solves, letter accuracy, and lost solves with the seeds and model hashes. Build the word and character resources from the verified training books with `python build_lexicon.py` and `python char_language.py`. The packaged resources allow offline decoding.
+
 Please submit only text and other material you have permission to share. No project license is specified here; do not assume one without checking with the project owner.

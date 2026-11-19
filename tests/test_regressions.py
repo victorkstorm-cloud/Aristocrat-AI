@@ -15,6 +15,11 @@ import training_data as data
 
 
 class DataTests(unittest.TestCase):
+    def test_chat_tokenization_matches_punctuated_training_words(self):
+        ciphertext = "It's BLUE—green; we’ll go.\nYes!"
+        normalized = " ".join(data.words(ciphertext))
+        self.assertEqual(chat.tokenize_ciphertext(ciphertext), chat.tokenize_ciphertext(normalized))
+
     def test_words_normalization(self):
         self.assertEqual(data.words("Café can't—DON’T 123!"), ["cafe", "cant", "dont"])
 
@@ -112,7 +117,8 @@ class ConvergenceTests(unittest.TestCase):
             values.update(strength=1., language=np.zeros(1), evidence_weight=0., max_passes=2)
             np.savez(root / "aristocrat_refiner.npz", **values)
             output = io.StringIO()
-            with patch.object(sys, "argv", ["aristocrat_chat.py", "--model-dir", str(root), "--passes", "5"]), \
+            with patch.object(sys, "argv", ["aristocrat_chat.py", "--model-dir", str(root),
+                                           "--passes", "5", "--neural-only"]), \
                  patch.object(chat, "read_ciphertext", side_effect=["ab", "/quit"]), \
                  patch.object(chat, "first_guess", return_value=(key, np.zeros((26, 26)))), \
                  patch.object(chat, "candidate_scores", return_value=(0., 0.)), \
