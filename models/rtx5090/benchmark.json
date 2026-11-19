@@ -1,0 +1,21 @@
+{
+  "test_split": "held-out books",
+  "main_best_epoch": 14,
+  "refiner_best_epoch": 3,
+  "refinement_passes": 3,
+  "refiner_strength": 4.0,
+  "previous_checkpoint": {
+    "puzzles": 1200,
+    "first_solved": 84,
+    "refined_solved": 535,
+    "first_letter_accuracy": 0.8921606094975097,
+    "refined_letter_accuracy": 0.9448444203363084
+  },
+  "new_checkpoint": {
+    "puzzles": 1200,
+    "first_solved": 109,
+    "refined_solved": 556,
+    "first_letter_accuracy": 0.9039770205631441,
+    "refined_letter_accuracy": 0.9479819024606736
+  }
+}
